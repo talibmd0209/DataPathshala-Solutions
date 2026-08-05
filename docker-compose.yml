@@ -1,0 +1,31 @@
+version: "3.9"
+
+services:
+  spark-notebook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: spark-databricks-notebook
+    ports:
+      - "8888:8888"   # Jupyter Lab
+      - "4040:4040"   # Spark UI (job 0)
+      - "4041:4041"   # Spark UI (job 1, if first port busy)
+    environment:
+      - JUPYTER_ENABLE_LAB=yes
+      - JUPYTER_TOKEN=databricks         # change/remove for prod
+      - SPARK_DRIVER_MEMORY=2g
+      - SPARK_EXECUTOR_MEMORY=2g
+      - GRANT_SUDO=yes
+    volumes:
+      - ./notebooks:/home/jovyan/work
+      - ./data:/home/jovyan/data
+      - ./startup:/home/jovyan/.ipython/profile_default/startup
+    working_dir: /home/jovyan/work
+    command: >
+      start-notebook.sh
+      --NotebookApp.token='databricks'
+      --ServerApp.root_dir=/home/jovyan/work
+    deploy:
+      resources:
+        limits:
+          memory: 4g
