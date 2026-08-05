@@ -1,49 +1,162 @@
-# Spark + Jupyter, Databricks-flavored
+# DataPathshala PySpark Solutions
 
-A local Docker environment that gives you a Jupyter Lab + PySpark setup with
-the Databricks notebook conveniences layered on top:
+![Python](https://img.shields.io/badge/Python-3.11+-3776AB?logo=python&logoColor=white)
+![PySpark](https://img.shields.io/badge/PySpark-4.0-E25A1C?logo=apachespark&logoColor=white)
+![Spark SQL](https://img.shields.io/badge/Spark-SQL-E25A1C?logo=apachespark&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Ready-2496ED?logo=docker&logoColor=white)
+![Jupyter](https://img.shields.io/badge/Jupyter-Lab-F37626?logo=jupyter&logoColor=white)
+![Delta Lake](https://img.shields.io/badge/Delta-Lake-00ADD8)
 
-| Databricks feature      | Available here as |
-|--------------------------|--------------------|
-| pre-created `spark`      | ✅ auto-created SparkSession (Delta Lake enabled) |
-| `display(df)`            | ✅ rich HTML table, capped at 1000 rows like Databricks |
-| `dbutils.fs.*`           | ✅ ls / mkdirs / rm / cp / mv / put / head, backed by local disk |
-| `dbutils.widgets.*`      | ✅ text / dropdown parameter widgets |
-| `dbutils.notebook.exit`/`.run` | ✅ run another notebook and get its return value |
-| `%run ./other_notebook`  | ✅ via `%run_notebook ./other_notebook` line magic |
-| Delta Lake tables         | ✅ `delta-spark` pre-installed and wired into Spark config |
+Practice PySpark and Spark SQL by solving DataPathshala problems on a fully Dockerized local Apache Spark environment.
 
-## Usage
+
+This repository contains my solutions to the **DataPathshala** PySpark and Spark SQL practice problems.
+
+All solutions are developed and tested on a **local Apache Spark environment running inside Docker**, providing a reproducible setup without requiring Databricks or any cloud platform.
+
+The repository also includes all Docker, Spark, and Jupyter configuration files needed to run the environment locally.
+
+---
+
+## Repository Goals
+
+* Solve DataPathshala practice problems using **PySpark**
+* Provide equivalent **Spark SQL** solutions where applicable
+* Practice production-style Spark development
+* Learn and experiment with Spark in a local environment
+* Share a fully reproducible Spark development setup
+
+---
+
+## Local Spark Environment
+
+The project uses a **Docker-based Spark + Jupyter Lab** environment with several Databricks-inspired utilities to make local development easier.
+
+| Databricks Feature          | Available Locally                                   |
+| --------------------------- | --------------------------------------------------- |
+| Pre-created `spark` session | ✅ Auto-created SparkSession with Delta Lake enabled |
+| `display(df)`               | ✅ Rich HTML table (up to 1000 rows)                 |
+| `dbutils.fs.*`              | ✅ Local filesystem implementation                   |
+| `dbutils.widgets.*`         | ✅ Text and dropdown widgets                         |
+| `dbutils.notebook.run()`    | ✅ Execute notebooks and return values               |
+| `%run_notebook`             | ✅ Notebook execution magic                          |
+| Delta Lake                  | ✅ Fully configured                                  |
+
+---
+
+## Project Structure
+
+```text
+.
+├── data/                  # Practice datasets
+├── notebooks/             # PySpark & Spark SQL solutions
+├── startup/               # Databricks utility shims
+├── configs/               # Spark configuration
+├── Dockerfile
+├── docker-compose.yml
+├── requirements.txt
+└── README.md
+```
+
+---
+
+## Prerequisites
+
+- Docker
+- Docker Compose
+- Git
+
+
+## Getting Started
+
+Clone the repository.
+
+```bash
+git clone https://github.com/talibmd0209/DataPathshala-Solutions.git
+cd DataPathshala-Solutions
+```
+
+Build and start the environment.
 
 ```bash
 docker compose up --build
 ```
 
-Then open http://localhost:8888 (token: `databricks`, set in `docker-compose.yml`).
+Open Jupyter Lab:
 
-- Notebooks live in `./notebooks` (mounted to `/home/jovyan/work`).
-- Data files live in `./data` (mounted to `/home/jovyan/data`) — use this as
-  your "DBFS" root with `dbutils.fs`.
-- Spark UI: http://localhost:4040 while a job is running.
+```
+http://localhost:8888
+```
 
-A starter notebook is included at `notebooks/00_getting_started.ipynb`.
+(Default token is configured in `docker-compose.yml`.)
 
-## Customizing
+---
 
-- Add Python packages: edit `Dockerfile`'s `pip install` list.
-- Change Spark resources: edit `SPARK_DRIVER_MEMORY` / `SPARK_EXECUTOR_MEMORY`
-  in `docker-compose.yml`.
-- The `display()` / `dbutils` shims live in `startup/01-databricks-utils.py` —
-  edit freely, they're plain Python, loaded automatically as an IPython
-  startup script on every kernel launch.
+## Folder Mapping
 
-## Notes / limitations
+| Local Folder  | Container Path      |
+| ------------- | ------------------- |
+| `./notebooks` | `/home/jovyan/work` |
+| `./data`      | `/home/jovyan/data` |
 
-- `dbutils.fs` operates on the local filesystem, not real DBFS/cloud storage
-  — good enough for local dev, not a drop-in for cloud paths (`s3://`,
-  `abfss://`) unless you mount/configure those separately.
-- `%run_notebook` is a custom magic (Jupyter doesn't allow overriding `%run`'s
-  behavior for `.ipynb` files) — use it instead of Databricks' bare `%run`.
-- Single-node Spark (`local[*]`) — fine for development; for a real cluster
-  swap the `master` in `startup/00-spark-session.py` for a Spark
-  standalone/YARN/K8s master URL.
+Spark UI is available at:
+
+```
+http://localhost:4040
+```
+
+while a Spark job is running.
+
+---
+
+## Customization
+
+* Add Python packages by editing the `Dockerfile`.
+* Modify Spark memory settings in `docker-compose.yml`.
+* Customize the Databricks helper utilities in:
+
+```text
+startup/
+├── 00-spark-session.py
+└── 01-databricks-utils.py
+```
+
+---
+
+## Limitations
+
+* Runs in **single-node (`local[*]`) Spark mode**.
+* `dbutils.fs` works on the local filesystem rather than cloud storage.
+* `%run_notebook` replaces Databricks' `%run` for Jupyter compatibility.
+
+---
+
+## Acknowledgement
+
+A special thanks to **Manish Kumar**, the creator of **DataPathshala**, for building an outstanding platform for learning Data Engineering through practical, hands-on problems.
+
+His educational content on **PySpark**, **Spark SQL**, **SQL**, and Data Engineering has helped many learners develop strong problem-solving skills and a deeper understanding of distributed data processing.
+
+This repository contains **my own implementations** of the practice problems available on DataPathshala. It is created for educational purposes and is **not affiliated with or endorsed by DataPathshala or Manish Kumar**.
+
+---
+
+## Future Work
+
+This repository will continue to grow with additional solutions covering:
+
+* DataFrame Transformations
+* Aggregations
+* Window Functions
+* Joins
+* Spark SQL
+* Optimization Techniques
+* Interview Problems
+* Delta Lake
+* Data Engineering Patterns
+
+---
+
+## License
+
+This repository is intended solely for educational and learning purposes.
